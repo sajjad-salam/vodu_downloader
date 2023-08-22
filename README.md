@@ -5,13 +5,13 @@ This tool is developed by me to download videos or subtitles of any series from 
 <br>
 # Installation for developers 
 <br>
-pip install requests
+<code>pip install requests</code>
 <br>
-pip install tqdm
+<code>pip install tqdm</code>
 <br>
-pip install 
+<code>pip install </code>
 <br>
-pip install ttkthemes
+<code>pip install ttkthemes</code>
 <br>
-pip install customtkinter
+<code>pip install customtkinter</code>
 <br>
