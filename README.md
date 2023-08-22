@@ -88,7 +88,7 @@ your terminal should look something like this :
 
 
 
-# صور من داخل الأداة
+# صور من داخل الأداة :
 ![Banner](gui/assets/screen.jpg)
 
 
