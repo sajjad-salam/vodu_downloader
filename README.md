@@ -88,7 +88,7 @@ your terminal should look something like this :
 
 
 
-# Preview of App Interface 
+# صور من داخل الأداة
 ![Banner](gui/assets/screen.jpg)
 
 
