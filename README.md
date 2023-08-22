@@ -92,7 +92,7 @@ your terminal should look something like this :
 ![Banner](gui/assets/screen.jpg)
 
 
-# Click Below to Watch Explanation of the tool Video : 
+# شرح الأداة: 
 [![Demo video](gui/assets/thumnil.jpg)](https://www.youtube.com/watch)
 
 
