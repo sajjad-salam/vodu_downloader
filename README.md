@@ -42,7 +42,7 @@ Below are the Things you will need to use the software and How to install them :
 
 if all the above prequisities are Satisfied, you may proceedto the next section.
 
-## Installation
+## Installation for developers 
 Follow these instructions to Setup your Own instance of the App :
 
 </br>
