@@ -39,12 +39,16 @@ Below are the Instructions on setting up the project Locally.</br>
 
 ## Features
 
-| -------------------------- | :----------------: |
 |Download videos|         ✔️         |
+<br>
 |Download translations|   ✔️         |
+<br>
 |Download resume|         ✔️         |
+<br>
 |Download in 1080 resolution|   In process of completion   |
+<br>
 |Download applications and programs|         In process of completion         |
+<br>
 
 
 
