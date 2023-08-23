@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import requests
 from tqdm import tqdm
 import time
+import sys
 from urllib3.exceptions import IncompleteRead
 import tkinter as tk
 from pathlib import Path
@@ -17,7 +18,11 @@ import customtkinter
 import urllib.request
 from urllib.parse import urlparse
 
-
+def resource_path(relative_path):
+    if hasattr(sys, "_MEIPASS"):
+        # For bundled executable
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 def download_with_retry(url, save_path, max_retries=3, retry_delay=300):
     for retry in range(max_retries + 1):
         try:
@@ -198,13 +203,30 @@ def show_developer_info():
               "LinkedIn: https://www.linkedin.com/in/sajjad-salam-963043244/ "
     
     messagebox.showinfo("Developer Information", message)
+    
+    
+# def resource_path(relative_path):
+#     if hasattr(sys, "_MEIPASS"):
+#         # For bundled executable
+#         return os.path.join(sys._MEIPASS, relative_path)
+#     return os.path.join(os.path.abspath("."), relative_path)
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 
 
 window = Tk()
 window.title("vodu Downloader")
 window.geometry("450x600")
 window.configure(bg = "#282828")
-window.iconbitmap(("gui/assets/icom.ico"))
+# window.iconbitmap(icon_path)
+window.iconbitmap(default="info")
+
 
 canvas = Canvas(
     window,
@@ -219,13 +241,15 @@ canvas = Canvas(
 canvas.place(x = 0, y = 0)
 
 
-
+image_path3 = resource_path("gui/assets/button_3.png")
+image_image_3 = PhotoImage(
+    file=image_path3),
 # About Button
-button_image_3 = PhotoImage(
-    file="gui/assets/button_3.png")
 button_3 = Button(
+    # name="developer",
+    # text="dev.",
+    image=image_image_3,
     command=show_developer_info,
-    image=button_image_3,
     borderwidth=0,
     highlightthickness=0,
     activebackground= "#202020",
@@ -239,9 +263,10 @@ button_3.place(
     height=30.0
 )
 
+image_path6 = resource_path("gui/assets/logo.png")
 
 image_image_6 = PhotoImage(
-    file="gui/assets/logo.png")
+    file=image_path6),
 image_6 = canvas.create_image(
     225.0,
     37.0,
@@ -250,19 +275,6 @@ image_6 = canvas.create_image(
 
 
 
-# Settings Button
-
-
-
-    
-# Output Selection section
-image_image_5 = PhotoImage(
-    file="gui/assets/image_5.png")
-image_5 = canvas.create_image(
-    224.5,
-    137.5,
-    image=image_image_5
-)
 
 
 text_widget = scrolledtext.ScrolledText(canvas, width=50, height=0.1, bg="#2D2D2D")
@@ -292,10 +304,11 @@ canvas.create_text(
 )
 
 
+image_path_subtitle = resource_path("gui/assets/button_subtitle.png")
 
 # Download Subtitle Button
 Download_subtitle_button_image = PhotoImage(
-    file="gui/assets/button_subtitle.png")
+    file=image_path_subtitle)
 
 Download_subtitle_button = Button(
     command=start_download_subtitle,
@@ -315,9 +328,11 @@ Download_subtitle_button.place(
 # Simulate existing content height (adjust this value based on your content)
 existing_content_height = 300
 
+image_path_video = resource_path("gui/assets/button_video.png")
+
 # Download Video Button
 Download_video_button_image = PhotoImage(
-    file="gui/assets/button_video.png")
+    file=image_path_video)
 
 Download_video_button = Button(
     command=start_download_video,

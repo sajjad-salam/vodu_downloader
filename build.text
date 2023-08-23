@@ -1,0 +1,1 @@
+pyinstaller --add-data "gui/assets/*.png;gui/assets/" --icon "C:/Users/user/Downloads/vodu_downloader/gui/assets/icom.ico" --noconfirm --console --onedir  main.py
