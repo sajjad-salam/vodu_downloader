@@ -9,7 +9,7 @@
 
  ##  Introduction
 Welcome to the Video Download Tool!
-    This tool allows you to easily download videos and subtitles from URLs.
+    This tool allows you to easily download videos and subtitles from URLs vodu.me .
     To get started, follow these steps:
     <br>
     1. Enter the URL of the series or video page in the provided input field.
@@ -42,7 +42,7 @@ Below are the Things you will need to use the software and How to install them :
 
 if all the above prequisities are Satisfied, you may proceedto the next section.
 
-## Installation
+## Installation for developers 
 Follow these instructions to Setup your Own instance of the App :
 
 </br>
@@ -88,11 +88,11 @@ your terminal should look something like this :
 
 
 
-# Preview of App Interface 
+# صور من داخل الأداة :
 ![Banner](gui/assets/screen.jpg)
 
 
-# Click Below to Watch Explanation of the tool Video : 
+# شرح الأداة: 
 [![Demo video](gui/assets/thumnil.jpg)](https://www.youtube.com/watch)
 
 
