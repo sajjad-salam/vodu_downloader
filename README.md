@@ -37,6 +37,20 @@ Below are the Instructions on setting up the project Locally.</br>
 
 
 
+## Features
+
+| -------------------------- | :----------------: |
+|Download videos|         ✔️         |
+|Download translations|   ✔️         |
+|Download resume|         ✔️         |
+|Download in 1080 resolution|   In process of completion   |
+|Download applications and programs|         In process of completion         |
+
+
+
+
+
+
 ## Prequisites 
 Below are the Things you will need to use the software and How to install them :
 - Operating System - Windows
@@ -44,6 +58,8 @@ Below are the Things you will need to use the software and How to install them :
 - Pip 3 (Usually gets Installed with Python)
 
 if all the above prequisities are Satisfied, you may proceedto the next section.
+
+
 
 ## Installation for developers 
 Follow these instructions to Setup your Own instance of the App :
