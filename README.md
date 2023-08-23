@@ -32,6 +32,9 @@ Below are the Instructions on setting up the project Locally.</br>
 
 ## Installation for users
 
+[![Download Folder](https://img.shields.io/badge/Download-App-red.svg)](https://github.com/sajjad-salam/Vodu_Downloader/dist/vodu_downloader.zip)
+
+
 
 
 ## Prequisites 
