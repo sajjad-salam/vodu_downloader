@@ -11,8 +11,11 @@ import tkinter as tk
 from pathlib import Path
 import tkinter
 import keyboard
+
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage,filedialog,END,ttk,Variable,messagebox
+
 from tkinter import Tk, scrolledtext, simpledialog, messagebox, ttk, filedialog
+import customtkinter
 import urllib.request
 from urllib.parse import urlparse
 
@@ -232,20 +235,9 @@ def resource_path(relative_path):
 def paste_text():
     text_widget.event_generate("<<Paste>>")
 
-def paste_text():
-    text_widget.event_generate("<<Paste>>")
-
 def show_context_menu(event):
     context_menu.post(event.x_root, event.y_root)
 
-def check_arabic_keyboard(e):
-    if keyboard.is_pressed("ctrl+ر"):
-        paste_text()
-
-
-
-
-# gui 
 window = Tk()
 window.title("vodu Downloader")
 window.geometry("450x600")
@@ -310,7 +302,6 @@ context_menu = tk.Menu(window, tearoff=0)
 context_menu.add_command(label="Paste", command=paste_text)
 
 text_widget.bind("<Button-3>", show_context_menu)
-text_widget.bind("<Key>", check_arabic_keyboard)
 
 canvas.create_text(
     20.0,
