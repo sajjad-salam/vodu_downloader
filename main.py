@@ -148,6 +148,16 @@ def start_download_subtitle():
     progress_bar["value"] = 100
     progress_label.config(text="Download Completed")
     # result_text.insert(tk.END, "Subtitle download completed.\n")
+
+def get_expected_file_size(video_url):
+    response = requests.head(video_url)
+    content_length_header = response.headers.get('content-length')
+    
+    if content_length_header:
+        return int(content_length_header)
+    else:
+        return None
+    
 def start_download_video():
     url = text_widget.get("1.0", tk.END).strip()
     if not url:
@@ -178,10 +188,13 @@ def start_download_video():
     for video_link in video_matches:
         video_filename = os.path.basename(video_link)
         video_save_path = os.path.join(download_path, video_filename)
-        
         if os.path.exists(video_save_path):
-            print(f"File '{video_filename}' already exists. Skipping download.")
-            continue
+            existing_file_size = os.path.getsize(video_save_path)
+            expected_file_size = get_expected_file_size(video_link)  # Implement this function
+            
+            if existing_file_size == expected_file_size:
+                print(f"File '{video_filename}' already exists and has the correct size. Skipping download.")
+                continue
         
         progress_bar["value"] = 0
         progress_label.config(text=f"Downloading {video_filename}")
