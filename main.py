@@ -148,7 +148,6 @@ def start_download_subtitle():
     progress_bar["value"] = 100
     progress_label.config(text="Download Completed")
     # result_text.insert(tk.END, "Subtitle download completed.\n")
-
 def start_download_video():
     url = text_widget.get("1.0", tk.END).strip()
     if not url:
@@ -161,7 +160,6 @@ def start_download_video():
     if not sample_text:
         messagebox.showinfo("Info", "Failed to extract simple text from the URL.")
         return
-    
     
     text_widget.delete("1.0", tk.END)
     text_widget.insert(tk.END, sample_text)
@@ -181,18 +179,20 @@ def start_download_video():
         video_filename = os.path.basename(video_link)
         video_save_path = os.path.join(download_path, video_filename)
         
+        if os.path.exists(video_save_path):
+            print(f"File '{video_filename}' already exists. Skipping download.")
+            continue
+        
         progress_bar["value"] = 0
         progress_label.config(text=f"Downloading {video_filename}")
         
         if download_with_retry(video_link, video_save_path):
-            print("done")
+            print(f"Downloaded '{video_filename}'")
         else:
-            print("error")
-            # result_text.insert(tk.END, f"Failed to download video '{video_filename}' from {video_link}\n")
+            print(f"Failed to download '{video_filename}' from {video_link}")
     
     progress_bar["value"] = 100
     progress_label.config(text="Download Completed")
-    # result_text.insert(tk.END, "Video download completed.\n")
 
 def show_developer_info():
     message = "Developer Information:\n\n" \
