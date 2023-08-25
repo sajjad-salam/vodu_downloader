@@ -10,11 +10,9 @@ from urllib3.exceptions import IncompleteRead
 import tkinter as tk
 from pathlib import Path
 import tkinter
-import webbrowser
+import keyboard
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage,filedialog,END,ttk,Variable,messagebox
-
 from tkinter import Tk, scrolledtext, simpledialog, messagebox, ttk, filedialog
-import customtkinter
 import urllib.request
 from urllib.parse import urlparse
 
@@ -231,8 +229,23 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
+def paste_text():
+    text_widget.event_generate("<<Paste>>")
+
+def paste_text():
+    text_widget.event_generate("<<Paste>>")
+
+def show_context_menu(event):
+    context_menu.post(event.x_root, event.y_root)
+
+def check_arabic_keyboard(e):
+    if keyboard.is_pressed("ctrl+ر"):
+        paste_text()
 
 
+
+
+# gui 
 window = Tk()
 window.title("vodu Downloader")
 window.geometry("450x600")
@@ -293,6 +306,11 @@ image_6 = canvas.create_image(
 text_widget = scrolledtext.ScrolledText(canvas, width=50, height=0.1, bg="#2D2D2D")
 canvas.create_window(224.5, 137.5, window=text_widget)
 
+context_menu = tk.Menu(window, tearoff=0)
+context_menu.add_command(label="Paste", command=paste_text)
+
+text_widget.bind("<Button-3>", show_context_menu)
+text_widget.bind("<Key>", check_arabic_keyboard)
 
 canvas.create_text(
     20.0,
