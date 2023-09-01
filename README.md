@@ -116,7 +116,7 @@ your terminal should look something like this :
 
 # صور من داخل الأداة :
 ![Banner](gui/assets/screen.jpg)
-![Banner](gui/assets/Screenshot_٢٠٢٣٠٩٠١-١٨٢٤٥٤[1].jpg)
+![Banner](gui/assets/image_2023-09-01_183446446.png)
 
 
 # شرح الأداة: 
