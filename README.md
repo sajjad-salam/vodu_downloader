@@ -30,7 +30,10 @@ Welcome to the Video Download Tool!
 # Getting Started  
 Below are the Instructions on setting up the project Locally.</br>
 
-## Installation for users
+## Installation for android
+
+[![Download Folder](https://img.shields.io/badge/Download-App-blue.svg)](https://github.com/sajjad-salam/vodu_downloader_app/raw/main/build/app/outputs/flutter-apk/app-release.apk)
+## Installation for windows
 
 [![Download Folder](https://img.shields.io/badge/Download-App-red.svg)](https://github.com/sajjad-salam/vodu_downloader/raw/main/dist/vodu_downloader.zip)
 
