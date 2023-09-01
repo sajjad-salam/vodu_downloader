@@ -116,7 +116,7 @@ your terminal should look something like this :
 
 # صور من داخل الأداة :
 ![Banner](gui/assets/screen.jpg)
-![Banner]([gui/assets/screen.jpg](https://github.com/sajjad-salam/vodu_downloader_app/blob/main/screenshot/Screenshot_٢٠٢٣٠٨٣٠-٠٠٥٠١٤.jpg))
+![Banner](gui/assets/Screenshot_٢٠٢٣٠٩٠١-١٨٢٤٥٤[1].jpg)
 
 
 # شرح الأداة: 
