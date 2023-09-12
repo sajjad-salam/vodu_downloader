@@ -120,7 +120,7 @@ your terminal should look something like this :
 
 
 # شرح الأداة: 
-[![Demo video](gui/assets/thumnil.jpg)](https://www.youtube.com/watch)
+[![Demo video](gui/assets/thumnil.jpg)](https://www.youtube.com/watch?v=8l5ig2wf3Ow)
 
 
 
