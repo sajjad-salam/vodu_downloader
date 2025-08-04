@@ -48,7 +48,7 @@ Below are the Instructions on setting up the project Locally.</br>
 <br>
 |Download resume|         ✔️         |
 <br>
-|Download in 1080 resolution|   In process of completion   |
+|Download in 1080 resolution|   ✔️   |
 <br>
 |Download applications and programs|         In process of completion         |
 <br>
