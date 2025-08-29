@@ -178,7 +178,7 @@ def start_download_video():
     quality = selected_quality.get()
     if not quality:
         messagebox.showinfo(
-            "Info", "Please select video quality (360p or 1080p).")
+            "Info", "Please select video quality (360p, 720p, or 1080p).")
         return
 
     # Get selected season
@@ -200,31 +200,32 @@ def start_download_video():
     text_widget.insert(tk.END, sample_text)
     text_widget.update_idletasks()
 
-    # Create pattern based on selected quality
-    if quality == "360p":
-        video_url_pattern = r"https://\S+-360\.mp4"
-    else:  # 1080p
-        video_url_pattern = r"https://\S+-1080\.mp4"
+    # Create pattern based on selected quality (supports 360p, 720p, 1080p)
+    qnum = {
+        "360p": "360",
+        "720p": "720",
+        "1080p": "1080",
+    }.get(quality)
 
+    # Primary pattern commonly used on the site
+    video_url_pattern = rf"https://\S+-{qnum}\.mp4"
     video_matches = re.findall(video_url_pattern, sample_text)
 
-    # If no matches found for the selected quality, try to find alternative patterns
+    # If no matches found for the selected quality, try alternative common patterns
     if not video_matches:
-        if quality == "1080p":
-            # Try alternative 1080p patterns
-            alternative_patterns = [
-                r"https://\S+-1080p\.mp4",
-                r"https://\S+_1080\.mp4",
-                r"https://\S+_1080p\.mp4"
-            ]
-            for pattern in alternative_patterns:
-                video_matches = re.findall(pattern, sample_text)
-                if video_matches:
-                    break
+        alternative_patterns = [
+            rf"https://\S+-{qnum}p\.mp4",  # e.g., -720p.mp4
+            rf"https://\S+_{qnum}\.mp4",   # e.g., _720.mp4
+            rf"https://\S+_{qnum}p\.mp4",  # e.g., _720p.mp4
+        ]
+        for pattern in alternative_patterns:
+            video_matches = re.findall(pattern, sample_text)
+            if video_matches:
+                break
 
         if not video_matches:
             messagebox.showinfo(
-                "Info", f"No {quality} videos found. Try the other quality option.")
+                "Info", f"No {quality} videos found. Try another quality option.")
             return
 
     # Choose base download path
@@ -476,6 +477,20 @@ radio_360p = tk.Radiobutton(
     font=("Roboto", 12)
 )
 radio_360p.pack(side="left", padx=10)
+
+radio_720p = tk.Radiobutton(
+    quality_frame,
+    text="720p",
+    variable=selected_quality,
+    value="720p",
+    bg="#282828",
+    fg="#FFFFFF",
+    selectcolor="#404040",
+    activebackground="#282828",
+    activeforeground="#FFFFFF",
+    font=("Roboto", 12)
+)
+radio_720p.pack(side="left", padx=10)
 
 radio_1080p = tk.Radiobutton(
     quality_frame,
