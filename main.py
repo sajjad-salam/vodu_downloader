@@ -12,6 +12,7 @@ from tkinter import Tk, Canvas,  Button, PhotoImage, filedialog, ttk,  messagebo
 from tkinter import Tk, scrolledtext,  messagebox, ttk, filedialog
 import urllib.request
 from urllib.parse import urlparse
+import webbrowser
 
 # Global variables for video quality and season selection (will be initialized after window creation)
 selected_quality = None
@@ -329,6 +330,126 @@ def start_download_video():
             "Download Complete", f"Downloaded Seasons {season_list} to separate folders in:\n{base_download_path}")
 
 
+def open_video_urls():
+    url = text_widget.get("1.0", tk.END).strip()
+    if not url:
+        messagebox.showinfo("Info", "Please enter a URL.")
+        return
+
+    # Get selected quality
+    quality = selected_quality.get()
+    if not quality:
+        messagebox.showinfo(
+            "Info", "Please select video quality (360p, 720p, or 1080p).")
+        return
+
+    # Get selected season
+    season_choice = selected_season.get()
+    if not season_choice:
+        messagebox.showinfo(
+            "Info", "Please select a season option.")
+        return
+
+    # Extract the simple text from the URL
+    sample_text = get_html_content(url)
+
+    if not sample_text:
+        messagebox.showinfo(
+            "Info", "Failed to extract simple text from the URL.")
+        return
+
+    text_widget.delete("1.0", tk.END)
+    text_widget.insert(tk.END, sample_text)
+    text_widget.update_idletasks()
+
+    # Create pattern based on selected quality (supports 360p, 720p, 1080p)
+    qnum = {
+        "360p": "360",
+        "720p": "720",
+        "1080p": "1080",
+    }.get(quality)
+
+    # Primary pattern commonly used on the site
+    video_url_pattern = rf"https://\S+-{qnum}\.mp4"
+    video_matches = re.findall(video_url_pattern, sample_text)
+
+    # If no matches found for the selected quality, try alternative common patterns
+    if not video_matches:
+        alternative_patterns = [
+            rf"https://\S+-{qnum}p\.mp4",  # e.g., -720p.mp4
+            rf"https://\S+_{qnum}\.mp4",   # e.g., _720.mp4
+            rf"https://\S+_{qnum}p\.mp4",  # e.g., _720p.mp4
+        ]
+        for pattern in alternative_patterns:
+            video_matches = re.findall(pattern, sample_text)
+            if video_matches:
+                break
+
+        if not video_matches:
+            messagebox.showinfo(
+                "Info", f"No {quality} videos found. Try another quality option.")
+            return
+
+    # Filter videos by season selection
+    filtered_videos = []
+    if season_choice == "all":
+        filtered_videos = video_matches
+    else:
+        season_num = int(season_choice)
+        for video_link in video_matches:
+            video_filename = os.path.basename(video_link)
+            # Extract season number from filename
+            season_match = re.search(r"_S(\d+)E\d+", video_filename)
+            if season_match and int(season_match.group(1)) == season_num:
+                filtered_videos.append(video_link)
+
+    if not filtered_videos:
+        if season_choice == "all":
+            messagebox.showinfo("Info", "No videos found.")
+        else:
+            messagebox.showinfo(
+                "Info", f"No episodes found for Season {season_choice}. Please check if this season exists.")
+        return
+
+    # Ask user for confirmation before opening multiple URLs
+    num_videos = len(filtered_videos)
+    if num_videos > 10:
+        result = messagebox.askyesno(
+            "Confirm",
+            f"This will open {num_videos} video URLs in your browser. This might be a lot of tabs. Do you want to continue?"
+        )
+        if not result:
+            return
+    elif num_videos > 1:
+        result = messagebox.askyesno(
+            "Confirm",
+            f"This will open {num_videos} video URLs in your browser. Continue?"
+        )
+        if not result:
+            return
+
+    # Open URLs in browser
+    opened_count = 0
+    for video_url in filtered_videos:
+        try:
+            webbrowser.open(video_url)
+            opened_count += 1
+            time.sleep(0.5)  # Small delay to prevent overwhelming the browser
+        except Exception as e:
+            print(f"Failed to open URL: {video_url}, Error: {e}")
+
+    # Show completion message
+    if season_choice == "all":
+        season_info = "all seasons"
+    else:
+        season_info = f"Season {season_choice}"
+
+    messagebox.showinfo(
+        "URLs Opened",
+        f"Opened {opened_count} video URLs ({quality}) for {season_info} in your browser."
+    )
+
+
 def show_developer_info():
     message = "Developer Information:\n\n" \
               "Name: sajjad salam\n" \
@@ -364,7 +485,7 @@ def show_context_menu(event):
 
 window = Tk()
 window.title("vodu Downloader")
-window.geometry("450x750")  # Increased height for season selection
+window.geometry("450x800")  # Increased height for additional button
 window.configure(bg="#282828")
 # window.iconbitmap(icon_path)
 window.iconbitmap(default="info")
@@ -379,7 +500,7 @@ selected_season.set("all")
 canvas = Canvas(
     window,
     bg="#282828",
-    height=750,  # Increased height
+    height=800,  # Increased height for additional button
     width=450,
     bd=0,
     highlightthickness=0,
@@ -621,10 +742,35 @@ Download_video_button.place(
     height=47.0
 )
 
+# Open URLs Button
+Open_urls_button = Button(
+    window,
+    text="Open Video URLs in Browser\nفتح روابط الفيديو في المتصفح",
+    command=open_video_urls,
+    bg="#404040",
+    fg="#FFFFFF",
+    activebackground="#505050",
+    activeforeground="#FFFFFF",
+    font=("Roboto Medium", 12),
+    borderwidth=2,
+    relief="raised",
+    cursor="hand2"
+)
+
+# Calculate y coordinate for the third button
+third_button_y = 490  # Position after the download video button
+
+Open_urls_button.place(
+    x=18.0,
+    y=third_button_y,
+    width=414.0,
+    height=47.0
+)
+
 
 progress_bar = ttk.Progressbar(window, orient="horizontal", mode="determinate")
-# Adjusted position for larger window
-progress_bar.pack(padx=10, pady=500, side="bottom")
+# Adjusted position for larger window with additional button
+progress_bar.pack(padx=10, pady=550, side="bottom")
 
 # Create and position the progress label
 progress_label = tkinter.Label(window, text="", font=("Helvetica", 10))
