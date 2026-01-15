@@ -1,6 +1,0 @@
-requests
-tqdm
-ttkthemes
-customtkinter
-keyboard
-
