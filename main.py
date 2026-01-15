@@ -524,8 +524,15 @@ def download_part_with_resume(url, save_path, progress_callback=None):
         headers['Range'] = f'bytes={existing_size}-'
         mode = 'ab'
 
+    # Use session with connection pooling for better performance
+    session = requests.Session()
+    session.headers.update({
+        'Connection': 'keep-alive',
+        'Accept-Encoding': 'identity'  # Disable compression to reduce CPU usage
+    })
+
     try:
-        response = requests.get(url, headers=headers, stream=True, timeout=300)
+        response = session.get(url, headers=headers, stream=True, timeout=300)
         response.raise_for_status()
 
         total_size = int(response.headers.get("content-length", 0))
@@ -535,8 +542,11 @@ def download_part_with_resume(url, save_path, progress_callback=None):
 
         downloaded_size = os.path.getsize(save_path) if mode == 'ab' else 0
 
+        # Use larger chunk size for better performance (1MB chunks instead of 8KB)
+        chunk_size = 1024 * 1024  # 1 MB chunks for faster downloads
+
         with open(save_path, mode) as file:
-            for chunk in response.iter_content(chunk_size=8192):
+            for chunk in response.iter_content(chunk_size=chunk_size):
                 if chunk:
                     file.write(chunk)
                     downloaded_size += len(chunk)
@@ -549,6 +559,8 @@ def download_part_with_resume(url, save_path, progress_callback=None):
     except requests.exceptions.RequestException as e:
         print(f"Download failed for {url}: {e}")
         return False
+    finally:
+        session.close()  # Clean up session
 
 
 def validate_file_integrity(file_path, expected_size):
