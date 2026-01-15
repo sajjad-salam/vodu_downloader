@@ -608,6 +608,10 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, prog
         completed_parts = 0
         failed_parts = []
 
+        # Track overall download statistics for ETA calculation
+        overall_start_time = time.time()
+        total_downloaded_bytes = 0  # Bytes downloaded across all parts
+
         # Get expected sizes for all parts
         part_sizes = {}
         for url in download_urls:
@@ -646,6 +650,7 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, prog
                     text=f"✓ Skipping: Part {i}/{total_parts} - {filename}\n(already downloaded)")
                 window.update_idletasks()
                 completed_parts += 1
+                total_downloaded_bytes += expected_size  # Track completed part bytes
                 # Update progress bar for skipped part
                 overall_progress = (completed_parts / total_parts) * 100
                 progress_bar["value"] = overall_progress
@@ -700,7 +705,10 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, prog
                     if total > 0:
                         # Calculate progress percentages
                         part_progress = (downloaded / total) * 100
-                        overall_progress = (
+
+                        # Calculate overall downloaded bytes (completed parts + current part)
+                        current_total_downloaded = total_downloaded_bytes + downloaded
+                        overall_progress = (current_total_downloaded / total_size * 100) if total_size > 0 else (
                             (completed_parts) / total_parts * 100) + (part_progress / total_parts)
 
                         # Calculate download speed
@@ -711,7 +719,7 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, prog
                         else:
                             speed_mb = 0
 
-                        # Calculate ETA
+                        # Calculate ETA for current part
                         if speed > 0 and downloaded < total:
                             remaining_bytes = total - downloaded
                             eta_seconds = remaining_bytes / speed
@@ -720,6 +728,18 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, prog
                             eta_str = f"{eta_minutes}:{eta_secs:02d}"
                         else:
                             eta_str = "Calculating..."
+
+                        # Calculate overall ETA
+                        overall_elapsed = time.time() - overall_start_time
+                        if overall_elapsed > 0 and current_total_downloaded > 0 and total_size > 0:
+                            overall_speed = current_total_downloaded / overall_elapsed
+                            remaining_total = total_size - current_total_downloaded
+                            overall_eta_seconds = remaining_total / overall_speed
+                            overall_eta_minutes = int(overall_eta_seconds / 60)
+                            overall_eta_secs = int(overall_eta_seconds % 60)
+                            overall_eta_str = f"{overall_eta_minutes}:{overall_eta_secs:02d}"
+                        else:
+                            overall_eta_str = "Calculating..."
 
                         # Format sizes
                         downloaded_mb = downloaded / (1024 * 1024)
@@ -736,7 +756,7 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, prog
 
                             # Terminal output (update in-place with \r)
                             print(f"\r  Progress: {part_progress:5.1f}% | {downloaded_mb:7.1f} MB / {total_mb:.1f} MB | "
-                                  f"Speed: {current_speed:6.1f} MB/s | ETA: {eta_str} | Overall: {overall_progress:5.1f}%", end='', flush=True)
+                                  f"Speed: {current_speed:6.1f} MB/s | ETA: {eta_str} | Overall: {overall_progress:5.1f}% | Overall ETA: {overall_eta_str}", end='', flush=True)
 
                             last_print_time = current_time
                             last_print_bytes = downloaded
@@ -754,7 +774,7 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, prog
                             f"⬇ Part {i}/{total_parts}: {filename}\n"
                             f"{part_progress:.1f}% ({downloaded_mb:.1f} MB / {total_mb:.1f} MB)\n"
                             f"Speed: {speed_mb:.1f} MB/s | ETA: {eta_str}\n"
-                            f"Overall: {overall_progress:.1f}% ({completed_parts}/{total_parts} files)"
+                            f"Overall: {overall_progress:.1f}% | Overall ETA: {overall_eta_str}"
                         )
                         progress_label.config(text=progress_text)
                         window.update_idletasks()
@@ -766,6 +786,7 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, prog
 
             if success:
                 completed_parts += 1
+                total_downloaded_bytes += part_downloaded_bytes  # Track total bytes for overall ETA
 
                 # Show completion of this file
                 part_size_mb = part_downloaded_bytes / (1024 * 1024)
