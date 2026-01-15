@@ -9,20 +9,22 @@
 
  ##  Introduction
 Welcome to the Video Download Tool!
-    This tool allows you to easily download videos and subtitles from URLs vodu.me .
+    This tool allows you to easily download videos, subtitles, apps, and games from vodu.me and share.vodu.store.
     To get started, follow these steps:
     <br>
-    1. Enter the URL of the series or video page in the provided input field.
+    1. Enter the URL of the series, video, or app/game page in the provided input field.
     <br>
     2. Click the 'Download Subtitle' button to download subtitle links.
     <br>
     3. Click the 'Download Video' button to download video links.
     <br>
-    4. Choose a download path for the files when prompted."
+    4. Click the 'Download Apps/Games' button to download applications and games from share.vodu.store.
     <br>
-    5. Monitor the progress bar for the download status
+    5. Choose a download path for the files when prompted."
     <br>
-    Enjoy using the Video Download Tool!
+    6. Monitor the progress bar for the download status
+    <br>
+    Enjoy using the Vodu Downloader Tool!
 
 
 
@@ -50,7 +52,13 @@ Below are the Instructions on setting up the project Locally.</br>
 <br>
 |Download in 1080 resolution|   ✔️   |
 <br>
-|Download applications and programs|         In process of completion         |
+|Download applications and games|         ✔️         |
+<br>
+|Resume interrupted downloads|   ✔️   |
+<br>
+|Retry on network failures|   ✔️   |
+<br>
+|Multi-part download support|   ✔️   |
 <br>
 
 
@@ -106,6 +114,66 @@ your terminal should look something like this :
 ```
 </br>
 🎉 You can develop the tool and Keep me updated by pull request  and let's make this tool useful for everyone
+
+
+## Apps and Games Download Feature
+
+### Overview
+The Apps and Games download feature allows you to download multi-part applications and games from share.vodu.store. The tool automatically discovers all download links and downloads them sequentially with progress tracking.
+
+### How to Use
+1. **Enter Vodu Store URL**: Paste a URL from share.vodu.store (e.g., `https://share.vodu.store/#/details/214620`)
+2. **Click "Download Apps/Games" Button**: The button with bilingual label (تحميل التطبيقات والألعاب)
+3. **Select Download Location**: Choose where you want to save the downloaded files
+4. **Monitor Progress**: Watch the progress bar showing current part and overall progress
+
+### Features
+- **Multi-Part Download**: Automatically discovers and downloads all parts of apps/games
+- **Resume Support**: If download is interrupted, it resumes from the last completed part
+- **HTTP Range Requests**: Resumes incomplete files from the last byte downloaded
+- **Retry Logic**: Automatically retries failed downloads up to 3 times with 5-second delays
+- **Progress Tracking**: Real-time progress showing current part (e.g., "Part 2 of 5") and overall percentage
+- **Partial Completion**: If some parts fail, you can retry them later
+- **Bilingual Error Messages**: Error messages in both English and Arabic
+- **Disk Space Check**: Validates available space before starting download
+
+### Supported URL Format
+```
+https://share.vodu.store/#/details/[ID]
+```
+
+Example:
+```
+https://share.vodu.store/#/details/214620
+```
+
+### Download URL Pattern
+The tool extracts download URLs matching this pattern:
+```
+https://share.vodu.store:9999/store-files/[filename]
+```
+
+### Resume Functionality
+- **Complete Parts**: Skips already downloaded parts that match expected file size
+- **Incomplete Parts**: Resumes from the last byte using HTTP Range requests
+- **Different Location**: If you select a different download location, downloads all parts from scratch
+
+### Error Handling
+The tool handles common error scenarios:
+- Network errors with automatic retry (3 attempts)
+- Disk full errors with clear warnings
+- Permission denied errors
+- Invalid URLs
+- Missing or broken download links
+- File corruption validation
+
+### Completion Summary
+After download completes, you'll see:
+- Number of files successfully downloaded
+- Total size downloaded
+- Save location
+- List of any failed parts (if applicable)
+
 
 
 </br>

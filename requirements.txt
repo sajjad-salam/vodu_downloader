@@ -1,0 +1,7 @@
+requests
+tqdm
+ttkthemes
+customtkinter
+keyboard
+selenium==4.16.0
+chromedriver-autoinstaller==0.6.4
