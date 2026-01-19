@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch:*)",
+      "Bash(if:*)",
+      "Bash(then ls -d specs/[0-9]*-improve-download-speed)",
+      "Bash(else echo \"No specs directory\")",
+      "Bash(fi:*)",
+      "Bash(pwsh:*)"
+    ]
+  }
+}

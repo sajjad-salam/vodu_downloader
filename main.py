@@ -798,7 +798,8 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, prog
 
             if success:
                 completed_parts += 1
-                total_downloaded_bytes += part_downloaded_bytes  # Track total bytes for overall ETA
+                # Track total bytes for overall ETA
+                total_downloaded_bytes += part_downloaded_bytes
 
                 # Show completion of this file
                 part_size_mb = part_downloaded_bytes / (1024 * 1024)
@@ -1668,12 +1669,6 @@ def show_developer_info():
 
     messagebox.showinfo("Developer Information", message)
 
-
-# def resource_path(relative_path):
-#     if hasattr(sys, "_MEIPASS"):
-#         # For bundled executable
-#         return os.path.join(sys._MEIPASS, relative_path)
-#     return os.path.join(os.path.abspath("."), relative_path)
 
 def resource_path(relative_path):
     try:
