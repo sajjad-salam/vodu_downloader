@@ -6,7 +6,10 @@
       "Bash(then ls -d specs/[0-9]*-improve-download-speed)",
       "Bash(else echo \"No specs directory\")",
       "Bash(fi:*)",
-      "Bash(pwsh:*)"
+      "Bash(pwsh:*)",
+      "Bash(git checkout:*)",
+      "Bash(then ls -la \"specs/001-improve-download-speed/checklists\")",
+      "Bash(else echo \"No checklists directory\")"
     ]
   }
 }
