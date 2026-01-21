@@ -187,7 +187,8 @@ def calculate_session_metrics(session: DownloadSession):
             # Lower variance = higher stability
             if session.average_speed_mb > 0:
                 cv = session.speed_variance / session.average_speed_mb  # Coefficient of variation
-                session.speed_stability_score = max(0.0, 1.0 - cv)  # 1.0 = zero variance
+                session.speed_stability_score = max(
+                    0.0, 1.0 - cv)  # 1.0 = zero variance
             else:
                 session.speed_stability_score = 0.0
         else:
@@ -229,7 +230,8 @@ def create_optimized_session():
     session.headers.update({
         'Connection': 'keep-alive',
         'Accept-Encoding': 'identity',  # Disable compression to reduce CPU
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',  # Standard browser UA
+        # Standard browser UA
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         'Cache-Control': 'no-cache',  # Bypass caching
         'Pragma': 'no-cache'
     })
@@ -283,18 +285,25 @@ def load_resume_state():
                 total_parts=session_dict.get('total_parts', 0),
                 completed_parts=session_dict.get('completed_parts', 0),
                 overall_progress=session_dict.get('overall_progress', 0.0),
-                total_downloaded_bytes=session_dict.get('total_downloaded_bytes', 0),
-                total_expected_bytes=session_dict.get('total_expected_bytes', 0),
-                status=SessionStatus(session_dict.get('status', 'initialized')),
-                created_at=datetime.fromisoformat(session_dict['created_at']) if session_dict.get('created_at') else datetime.now(),
-                started_at=datetime.fromisoformat(session_dict['started_at']) if session_dict.get('started_at') else None,
-                completed_at=datetime.fromisoformat(session_dict['completed_at']) if session_dict.get('completed_at') else None,
+                total_downloaded_bytes=session_dict.get(
+                    'total_downloaded_bytes', 0),
+                total_expected_bytes=session_dict.get(
+                    'total_expected_bytes', 0),
+                status=SessionStatus(
+                    session_dict.get('status', 'initialized')),
+                created_at=datetime.fromisoformat(session_dict['created_at']) if session_dict.get(
+                    'created_at') else datetime.now(),
+                started_at=datetime.fromisoformat(
+                    session_dict['started_at']) if session_dict.get('started_at') else None,
+                completed_at=datetime.fromisoformat(
+                    session_dict['completed_at']) if session_dict.get('completed_at') else None,
                 last_error=session_dict.get('last_error'),
                 # NEW: Performance metrics (with defaults for v1.0)
                 peak_speed_mb=session_dict.get('peak_speed_mb', 0.0),
                 average_speed_mb=session_dict.get('average_speed_mb', 0.0),
                 speed_variance=session_dict.get('speed_variance', 0.0),
-                speed_stability_score=session_dict.get('speed_stability_score', 0.0)
+                speed_stability_score=session_dict.get(
+                    'speed_stability_score', 0.0)
             )
 
             # Parse parts
@@ -308,12 +317,15 @@ def load_resume_state():
                     status=PartStatus(part_dict.get('status', 'pending')),
                     retry_count=part_dict.get('retry_count', 0),
                     local_path=part_dict.get('local_path'),
-                    last_attempt_at=datetime.fromisoformat(part_dict['last_attempt_at']) if part_dict.get('last_attempt_at') else None,
-                    completed_at=datetime.fromisoformat(part_dict['completed_at']) if part_dict.get('completed_at') else None,
+                    last_attempt_at=datetime.fromisoformat(
+                        part_dict['last_attempt_at']) if part_dict.get('last_attempt_at') else None,
+                    completed_at=datetime.fromisoformat(
+                        part_dict['completed_at']) if part_dict.get('completed_at') else None,
                     # NEW: Speed tracking (with defaults for v1.0)
                     instant_speed_mb=part_dict.get('instant_speed_mb', 0.0),
                     speed_samples=part_dict.get('speed_samples', []),
-                    last_speed_update=datetime.fromisoformat(part_dict['last_speed_update']) if part_dict.get('last_speed_update') else None
+                    last_speed_update=datetime.fromisoformat(
+                        part_dict['last_speed_update']) if part_dict.get('last_speed_update') else None
                 )
                 session.parts.append(part)
 
@@ -765,7 +777,8 @@ def download_part_with_resume(url, save_path, progress_callback=None, session=No
         close_session = True
 
     try:
-        response = session.get(url, headers=headers, stream=True, timeout=600)  # Increased to 10 minutes
+        # Increased to 10 minutes
+        response = session.get(url, headers=headers, stream=True, timeout=600)
         response.raise_for_status()
 
         total_size = int(response.headers.get("content-length", 0))
@@ -794,7 +807,8 @@ def download_part_with_resume(url, save_path, progress_callback=None, session=No
                     current_time = time.time()
                     elapsed = current_time - last_update_time
                     if download_part and elapsed >= 1.0:
-                        update_speed_tracking(download_part, bytes_since_last_update, elapsed)
+                        update_speed_tracking(
+                            download_part, bytes_since_last_update, elapsed)
                         last_update_time = current_time
                         bytes_since_last_update = 0
 
@@ -1731,8 +1745,23 @@ def start_download_video():
                 break
 
         if not video_matches:
-            messagebox.showinfo(
-                "Info", f"No {quality} videos found. Try another quality option.")
+            # NEW: Detect which qualities ARE available and suggest them
+            available_qualities = []
+            for q in ["360", "720", "1080"]:
+                if re.findall(rf"https://\S+-{q}\.mp4", sample_text):
+                    available_qualities.append(f"{q}p")
+
+            if available_qualities:
+                qualities_str = ", ".join(available_qualities)
+                messagebox.showinfo(
+                    "Info",
+                    f"No {quality} videos found on this page.\n\n"
+                    f"Available qualities on this page: {qualities_str}\n\n"
+                    f"Please select a different quality and try again."
+                )
+            else:
+                messagebox.showinfo(
+                    "Info", f"No {quality} videos found. Try another quality option.")
             return
 
     # Choose base download path
@@ -1892,8 +1921,23 @@ def open_video_urls():
                 break
 
         if not video_matches:
-            messagebox.showinfo(
-                "Info", f"No {quality} videos found. Try another quality option.")
+            # NEW: Detect which qualities ARE available and suggest them
+            available_qualities = []
+            for q in ["360", "720", "1080"]:
+                if re.findall(rf"https://\S+-{q}\.mp4", sample_text):
+                    available_qualities.append(f"{q}p")
+
+            if available_qualities:
+                qualities_str = ", ".join(available_qualities)
+                messagebox.showinfo(
+                    "Info",
+                    f"No {quality} videos found on this page.\n\n"
+                    f"Available qualities on this page: {qualities_str}\n\n"
+                    f"Please select a different quality and try again."
+                )
+            else:
+                messagebox.showinfo(
+                    "Info", f"No {quality} videos found. Try another quality option.")
             return
 
     # Filter videos by season selection

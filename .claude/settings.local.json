@@ -9,7 +9,11 @@
       "Bash(pwsh:*)",
       "Bash(git checkout:*)",
       "Bash(then ls -la \"specs/001-improve-download-speed/checklists\")",
-      "Bash(else echo \"No checklists directory\")"
+      "Bash(else echo \"No checklists directory\")",
+      "Bash(python:*)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(ls:*)"
     ]
   }
 }
