@@ -1209,6 +1209,84 @@ def start_download_apps_games():
     download_thread.start()
 
 
+def open_apps_games_urls():
+    """Open all Apps/Games download URLs in browser instead of downloading."""
+    url = text_widget.get("1.0", tk.END).strip()
+
+    if not url:
+        messagebox.showinfo("Info", "Please enter a Vodu store URL")
+        return
+
+    # Validate URL format
+    if "share.vodu.store" not in url:
+        messagebox.showinfo("Info", "Please enter a valid Vodu store URL")
+        return
+
+    # Extract download links
+    progress_label.config(text="Extracting download links...")
+    window.update_idletasks()
+
+    # FIRST: Try the direct API endpoint (fastest)
+    download_urls = try_api_endpoint(url)
+
+    # SECOND: If API fails, use Selenium with network interception
+    if not download_urls:
+        download_urls = get_vodu_download_links_with_selenium(url)
+
+    if not download_urls:
+        messagebox.showinfo(
+            "Info",
+            "No download links found.\n\n"
+            "This could mean:\n"
+            "1. The App/Game ID doesn't exist in Vodu store\n"
+            "2. The page has no downloadable files\n"
+            "3. The page structure has changed\n\n"
+            "Please verify:\n"
+            "- The URL is correct\n"
+            "- The page has download buttons when opened in browser"
+        )
+        progress_label.config(text="")
+        return
+
+    # Ask user for confirmation before opening multiple URLs
+    num_urls = len(download_urls)
+    if num_urls > 10:
+        result = messagebox.askyesno(
+            "Confirm",
+            f"This will open {num_urls} file URLs in your browser. This might be a lot of tabs. Do you want to continue?"
+        )
+        if not result:
+            progress_label.config(text="")
+            return
+    elif num_urls > 1:
+        result = messagebox.askyesno(
+            "Confirm",
+            f"This will open {num_urls} file URLs in your browser. Continue?"
+        )
+        if not result:
+            progress_label.config(text="")
+            return
+
+    # Open URLs in browser
+    opened_count = 0
+    for i, download_url in enumerate(download_urls, 1):
+        try:
+            progress_label.config(text=f"Opening URL {i}/{num_urls}...")
+            window.update_idletasks()
+            webbrowser.open(download_url)
+            opened_count += 1
+            time.sleep(0.5)  # Small delay to prevent overwhelming the browser
+        except Exception as e:
+            print(f"Failed to open URL: {download_url}, Error: {e}")
+
+    # Show completion message
+    progress_label.config(text="")
+    messagebox.showinfo(
+        "URLs Opened",
+        f"Opened {opened_count} file URLs in your browser."
+    )
+
+
 def resource_path(relative_path):
     if hasattr(sys, "_MEIPASS"):
         # For bundled executable
@@ -2035,7 +2113,7 @@ def show_context_menu(event):
 
 window = Tk()
 window.title("vodu Downloader")
-window.geometry("450x870")  # Increased height for apps/games button
+window.geometry("450x930")  # Increased height for open URLs button
 window.configure(bg="#282828")
 # window.iconbitmap(icon_path)
 window.iconbitmap(default="info")
@@ -2350,6 +2428,34 @@ apps_games_button_y = 550  # Position after the Open URLs button
 apps_games_button.place(
     x=18.0,
     y=apps_games_button_y,
+    width=414.0,
+    height=47.0
+)
+
+# ============================================================================
+# Open Apps/Games URLs in Browser Button
+# ============================================================================
+
+open_apps_urls_button = Button(
+    window,
+    text="Open Apps/Games URLs in Browser\nفتح روابط التطبيقات في المتصفح",
+    command=open_apps_games_urls,
+    bg="#404040",
+    fg="#FFFFFF",
+    activebackground="#505050",
+    activeforeground="#FFFFFF",
+    font=("Roboto Medium", 12),
+    borderwidth=2,
+    relief="raised",
+    cursor="hand2"
+)
+
+# Calculate y coordinate for the open URLs button
+open_apps_urls_button_y = 610  # Position after the Apps/Games button
+
+open_apps_urls_button.place(
+    x=18.0,
+    y=open_apps_urls_button_y,
     width=414.0,
     height=47.0
 )
