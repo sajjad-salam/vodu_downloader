@@ -19,7 +19,6 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 
 import requests
-from tqdm import tqdm
 from urllib3.exceptions import IncompleteRead
 from urllib.parse import urlparse
 
@@ -233,17 +232,24 @@ def load_resume_state():
                 total_parts=session_dict.get('total_parts', 0),
                 completed_parts=session_dict.get('completed_parts', 0),
                 overall_progress=session_dict.get('overall_progress', 0.0),
-                total_downloaded_bytes=session_dict.get('total_downloaded_bytes', 0),
-                total_expected_bytes=session_dict.get('total_expected_bytes', 0),
-                status=SessionStatus(session_dict.get('status', 'initialized')),
-                created_at=datetime.fromisoformat(session_dict['created_at']) if session_dict.get('created_at') else datetime.now(),
-                started_at=datetime.fromisoformat(session_dict['started_at']) if session_dict.get('started_at') else None,
-                completed_at=datetime.fromisoformat(session_dict['completed_at']) if session_dict.get('completed_at') else None,
+                total_downloaded_bytes=session_dict.get(
+                    'total_downloaded_bytes', 0),
+                total_expected_bytes=session_dict.get(
+                    'total_expected_bytes', 0),
+                status=SessionStatus(
+                    session_dict.get('status', 'initialized')),
+                created_at=datetime.fromisoformat(session_dict['created_at']) if session_dict.get(
+                    'created_at') else datetime.now(),
+                started_at=datetime.fromisoformat(
+                    session_dict['started_at']) if session_dict.get('started_at') else None,
+                completed_at=datetime.fromisoformat(
+                    session_dict['completed_at']) if session_dict.get('completed_at') else None,
                 last_error=session_dict.get('last_error'),
                 peak_speed_mb=session_dict.get('peak_speed_mb', 0.0),
                 average_speed_mb=session_dict.get('average_speed_mb', 0.0),
                 speed_variance=session_dict.get('speed_variance', 0.0),
-                speed_stability_score=session_dict.get('speed_stability_score', 0.0)
+                speed_stability_score=session_dict.get(
+                    'speed_stability_score', 0.0)
             )
             for part_dict in session_dict.get('parts', []):
                 part = DownloadPart(
@@ -255,11 +261,14 @@ def load_resume_state():
                     status=PartStatus(part_dict.get('status', 'pending')),
                     retry_count=part_dict.get('retry_count', 0),
                     local_path=part_dict.get('local_path'),
-                    last_attempt_at=datetime.fromisoformat(part_dict['last_attempt_at']) if part_dict.get('last_attempt_at') else None,
-                    completed_at=datetime.fromisoformat(part_dict['completed_at']) if part_dict.get('completed_at') else None,
+                    last_attempt_at=datetime.fromisoformat(
+                        part_dict['last_attempt_at']) if part_dict.get('last_attempt_at') else None,
+                    completed_at=datetime.fromisoformat(
+                        part_dict['completed_at']) if part_dict.get('completed_at') else None,
                     instant_speed_mb=part_dict.get('instant_speed_mb', 0.0),
                     speed_samples=part_dict.get('speed_samples', []),
-                    last_speed_update=datetime.fromisoformat(part_dict['last_speed_update']) if part_dict.get('last_speed_update') else None
+                    last_speed_update=datetime.fromisoformat(
+                        part_dict['last_speed_update']) if part_dict.get('last_speed_update') else None
                 )
                 session.parts.append(part)
             sessions.append(session)
@@ -382,7 +391,8 @@ def get_file_info_api(app_id):
     cookies = {"G_ENABLED_IDPS": "google"}
     try:
         print(f"[INFO] Fetching file list from API: {api_url}")
-        response = requests.get(api_url, headers=headers, cookies=cookies, timeout=30)
+        response = requests.get(api_url, headers=headers,
+                                cookies=cookies, timeout=30)
         if response.status_code != 200:
             return None
         data = response.json()
@@ -409,7 +419,8 @@ def get_download_url_for_file(file_id):
     }
     cookies = {"G_ENABLED_IDPS": "google"}
     try:
-        response = requests.get(api_url, headers=headers, cookies=cookies, timeout=30)
+        response = requests.get(api_url, headers=headers,
+                                cookies=cookies, timeout=30)
         if response.status_code == 200:
             data = response.json()
             if "messge" in data:
@@ -438,7 +449,8 @@ def try_api_endpoint(url):
     }
     cookies = {"G_ENABLED_IDPS": "google"}
     try:
-        response = requests.get(api_url, headers=headers, cookies=cookies, timeout=30)
+        response = requests.get(api_url, headers=headers,
+                                cookies=cookies, timeout=30)
         if response.status_code == 200:
             data = response.json()
             download_urls = []
@@ -449,11 +461,13 @@ def try_api_endpoint(url):
                         download_urls.append(message_value)
                 elif "files" in data:
                     for item in data["files"]:
-                        urls = re.findall(r'https://share\.vodu\.store:9999/store-files/[^\s"\'<>]+', str(item))
+                        urls = re.findall(
+                            r'https://share\.vodu\.store:9999/store-files/[^\s"\'<>]+', str(item))
                         download_urls.extend(urls)
             if not download_urls:
                 data_str = str(data)
-                download_urls = re.findall(r'https://share\.vodu\.store:9999/store-files/[^\s"\'<>]+', data_str)
+                download_urls = re.findall(
+                    r'https://share\.vodu\.store:9999/store-files/[^\s"\'<>]+', data_str)
             seen = set()
             unique_urls = []
             for url in download_urls:
@@ -496,11 +510,13 @@ def download_part_with_resume(url, save_path, progress_callback=None, session=No
                     current_time = time.time()
                     elapsed = current_time - last_update_time
                     if download_part and elapsed >= 1.0:
-                        update_speed_tracking(download_part, bytes_since_last_update, elapsed)
+                        update_speed_tracking(
+                            download_part, bytes_since_last_update, elapsed)
                         last_update_time = current_time
                         bytes_since_last_update = 0
                     if progress_callback:
-                        progress_callback(len(chunk), downloaded_size, total_size)
+                        progress_callback(
+                            len(chunk), downloaded_size, total_size)
         return True
     except requests.exceptions.RequestException:
         return False
@@ -516,7 +532,8 @@ def get_vodu_download_links_with_selenium(url):
         chrome_paths = [
             r"C:\Program Files\Google\Chrome\Application\chrome.exe",
             r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
-            os.path.expandvars(r"%LocalAppData%\Google\Chrome\Application\chrome.exe"),
+            os.path.expandvars(
+                r"%LocalAppData%\Google\Chrome\Application\chrome.exe"),
         ]
         chrome_path = None
         for path in chrome_paths:
@@ -533,13 +550,16 @@ def get_vodu_download_links_with_selenium(url):
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('--window-size=1920,1080')
         chrome_options.binary_location = chrome_path
-        chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        chrome_options.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
+        chrome_options.add_experimental_option(
+            'excludeSwitches', ['enable-logging'])
+        chrome_options.set_capability(
+            'goog:loggingPrefs', {'performance': 'ALL'})
         driver = webdriver.Chrome(service=service, options=chrome_options)
         print(f"[INFO] Loading page: {url}")
         driver.get(url)
         time.sleep(5)
-        download_buttons = driver.find_elements("xpath", "//button[contains(text(), 'تحميل') or contains(@class, 'download')]")
+        download_buttons = driver.find_elements(
+            "xpath", "//button[contains(text(), 'تحميل') or contains(@class, 'download')]")
         download_urls = set()
         for button in download_buttons[:10]:
             try:
@@ -552,7 +572,8 @@ def get_vodu_download_links_with_selenium(url):
                     try:
                         log = json.loads(entry['message'])['message']
                         if log.get('method') == 'Network.responseReceived':
-                            response_url = log.get('params', {}).get('response', {}).get('url', '')
+                            response_url = log.get('params', {}).get(
+                                'response', {}).get('url', '')
                             if 'share.vodu.store:9999/store-files/' in response_url:
                                 download_urls.add(response_url)
                     except:
@@ -611,7 +632,8 @@ def download_with_retry(url, save_path, progress_bar=None, status_label=None, wi
                     file.write(data)
                     downloaded_size += len(data)
                     if progress_bar and window:
-                        progress = int((downloaded_size / total_size) * 100) if total_size > 0 else 0
+                        progress = int((downloaded_size / total_size)
+                                       * 100) if total_size > 0 else 0
                         # Update the progress bar
                         if hasattr(progress_bar, 'set_progress'):
                             progress_bar.set_progress(progress)
@@ -621,7 +643,8 @@ def download_with_retry(url, save_path, progress_bar=None, status_label=None, wi
             return True
         except Exception as e:
             if retry < max_retries:
-                print(f"Retrying {url} (attempt {retry + 2}/{max_retries + 1})...")
+                print(
+                    f"Retrying {url} (attempt {retry + 2}/{max_retries + 1})...")
                 time.sleep(5)
             else:
                 print(f"Failed to download {url}")
@@ -653,7 +676,8 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, stat
             print("\n" + "=" * 60)
             print("API failed, trying Selenium...")
             print("=" * 60 + "\n")
-            download_urls = get_vodu_download_links_with_selenium(vodu_store_url)
+            download_urls = get_vodu_download_links_with_selenium(
+                vodu_store_url)
 
         if not download_urls:
             messagebox.showinfo("Info", "No download links found.")
@@ -678,7 +702,8 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, stat
                 part_sizes[os.path.basename(url)] = 0
 
         if total_size > 0 and not check_disk_space(download_path, total_size):
-            messagebox.showerror("Error", f"Not enough disk space. Need {total_size / (1024**3):.2f}GB")
+            messagebox.showerror(
+                "Error", f"Not enough disk space. Need {total_size / (1024**3):.2f}GB")
             return
 
         for i, url in enumerate(download_urls, 1):
@@ -688,9 +713,11 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, stat
 
             if expected_size > 0 and check_existing_part(save_path, expected_size):
                 if hasattr(status_label, 'set_text'):
-                    status_label.set_text(f"✓ Skipping: Part {i}/{total_parts} - {filename}\n(already downloaded)")
+                    status_label.set_text(
+                        f"✓ Skipping: Part {i}/{total_parts} - {filename}\n(already downloaded)")
                 else:
-                    status_label.config(text=f"✓ Skipping: Part {i}/{total_parts}")
+                    status_label.config(
+                        text=f"✓ Skipping: Part {i}/{total_parts}")
                 window.update_idletasks()
                 completed_parts += 1
                 total_downloaded_bytes += expected_size
@@ -721,16 +748,20 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, stat
             for attempt in range(3):
                 if attempt > 0:
                     if hasattr(status_label, 'set_text'):
-                        status_label.set_text(f"⚠ Retrying: Part {i}/{total_parts} - {filename}\nAttempt {attempt + 1}/3...")
+                        status_label.set_text(
+                            f"⚠ Retrying: Part {i}/{total_parts} - {filename}\nAttempt {attempt + 1}/3...")
                     else:
-                        status_label.config(text=f"⚠ Retrying: Part {i}/{total_parts}")
+                        status_label.config(
+                            text=f"⚠ Retrying: Part {i}/{total_parts}")
                     window.update_idletasks()
                     time.sleep(5)
                 else:
                     if hasattr(status_label, 'set_text'):
-                        status_label.set_text(f"⬇ Downloading: Part {i}/{total_parts} - {filename}\nStarting...")
+                        status_label.set_text(
+                            f"⬇ Downloading: Part {i}/{total_parts} - {filename}\nStarting...")
                     else:
-                        status_label.config(text=f"⬇ Downloading: Part {i}/{total_parts}")
+                        status_label.config(
+                            text=f"⬇ Downloading: Part {i}/{total_parts}")
                     window.update_idletasks()
 
                 def update_progress(chunk_bytes, downloaded, total):
@@ -741,10 +772,12 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, stat
                     if total > 0:
                         part_progress = (downloaded / total) * 100
                         current_total_downloaded = total_downloaded_bytes + downloaded
-                        overall_progress = (current_total_downloaded / total_size * 100) if total_size > 0 else (completed_parts / total_parts) * 100 + (part_progress / total_parts)
+                        overall_progress = (current_total_downloaded / total_size * 100) if total_size > 0 else (
+                            completed_parts / total_parts) * 100 + (part_progress / total_parts)
 
                         elapsed_time = time.time() - part_start_time
-                        speed_mb = (downloaded / (1024 * 1024)) / elapsed_time if elapsed_time > 0 else 0
+                        speed_mb = (downloaded / (1024 * 1024)) / \
+                            elapsed_time if elapsed_time > 0 else 0
                         display_speed = download_part.instant_speed_mb if download_part.instant_speed_mb > 0 else speed_mb
 
                         if speed > 0 and downloaded < total:
@@ -757,8 +790,10 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, stat
                         if current_time - last_print_time >= 2.0:
                             time_diff = current_time - last_print_time
                             bytes_diff = downloaded - last_print_bytes
-                            current_speed = (bytes_diff / time_diff / (1024 * 1024)) if time_diff > 0 else display_speed
-                            print(f"\r  Progress: {part_progress:5.1f}% | {downloaded / (1024*1024):7.1f} MB | Speed: {current_speed:6.1f} MB/s | ETA: {eta_str}", end='', flush=True)
+                            current_speed = (
+                                bytes_diff / time_diff / (1024 * 1024)) if time_diff > 0 else display_speed
+                            print(
+                                f"\r  Progress: {part_progress:5.1f}% | {downloaded / (1024*1024):7.1f} MB | Speed: {current_speed:6.1f} MB/s | ETA: {eta_str}", end='', flush=True)
                             last_print_time = current_time
                             last_print_bytes = downloaded
 
@@ -780,7 +815,8 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, stat
                             window.update_idletasks()
                             last_gui_update_time = current_time
 
-                success = download_part_with_resume(url, save_path, update_progress, session, download_part)
+                success = download_part_with_resume(
+                    url, save_path, update_progress, session, download_part)
                 if success:
                     break
 
@@ -789,10 +825,12 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, stat
                 total_downloaded_bytes += part_downloaded_bytes
                 part_size_mb = part_downloaded_bytes / (1024 * 1024)
                 elapsed_time = time.time() - part_start_time
-                avg_speed = part_downloaded_bytes / elapsed_time / (1024 * 1024) if elapsed_time > 0 else 0
+                avg_speed = part_downloaded_bytes / elapsed_time / \
+                    (1024 * 1024) if elapsed_time > 0 else 0
 
                 if hasattr(status_label, 'set_text'):
-                    status_label.set_text(f"✓ Completed: Part {i}/{total_parts} - {filename}\nSize: {part_size_mb:.1f} MB")
+                    status_label.set_text(
+                        f"✓ Completed: Part {i}/{total_parts} - {filename}\nSize: {part_size_mb:.1f} MB")
                 else:
                     status_label.config(text=f"✓ Completed: {i}/{total_parts}")
                 window.update_idletasks()
@@ -801,7 +839,8 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, stat
 
         session.close()
 
-        final_progress = 100 if not failed_parts else (completed_parts / total_parts) * 100
+        final_progress = 100 if not failed_parts else (
+            completed_parts / total_parts) * 100
         if hasattr(progress_bar, 'set_progress'):
             progress_bar.set_progress(final_progress)
         else:
@@ -809,15 +848,18 @@ def download_apps_games_worker(vodu_store_url, download_path, progress_bar, stat
         window.update_idletasks()
 
         if failed_parts:
-            failed_list = "\n".join([f"  - Part {idx}: {name}" for idx, name in failed_parts])
+            failed_list = "\n".join(
+                [f"  - Part {idx}: {name}" for idx, name in failed_parts])
             message = f"Download completed with errors:\n\nSuccessfully downloaded: {completed_parts}/{total_parts} files\n\nFailed parts:\n{failed_list}"
             if hasattr(status_label, 'set_text'):
-                status_label.set_text(f"Partial completion: {completed_parts}/{total_parts} files")
+                status_label.set_text(
+                    f"Partial completion: {completed_parts}/{total_parts} files")
             messagebox.showinfo("Download Partially Complete", message)
         else:
             if hasattr(status_label, 'set_text'):
                 status_label.set_text("Download completed successfully")
-            messagebox.showinfo("Download Complete", f"Successfully downloaded {total_parts} files to:\n{download_path}")
+            messagebox.showinfo(
+                "Download Complete", f"Successfully downloaded {total_parts} files to:\n{download_path}")
 
     except Exception as e:
         error_msg = str(e)
@@ -864,7 +906,8 @@ class DownloadHandlers:
         self.html_cache = sample_text
 
         # Create video URL pattern based on quality
-        qnum = {"360p": "360", "720p": "720", "1080p": "1080"}.get(quality, "360")
+        qnum = {"360p": "360", "720p": "720",
+                "1080p": "1080"}.get(quality, "360")
         video_url_pattern = rf"https://\S+-{qnum}\.mp4"
         video_matches = re.findall(video_url_pattern, sample_text)
 
@@ -886,13 +929,15 @@ class DownloadHandlers:
                     available_qualities.append(f"{q}p")
             if available_qualities:
                 qualities_str = ", ".join(available_qualities)
-                messagebox.showinfo("Info", f"No {quality} videos found.\n\nAvailable: {qualities_str}")
+                messagebox.showinfo(
+                    "Info", f"No {quality} videos found.\n\nAvailable: {qualities_str}")
             else:
                 messagebox.showinfo("Info", f"No {quality} videos found.")
             return
 
         # Select download path
-        base_download_path = filedialog.askdirectory(title="Choose Download Path")
+        base_download_path = filedialog.askdirectory(
+            title="Choose Download Path")
         if not base_download_path:
             return
 
@@ -917,7 +962,8 @@ class DownloadHandlers:
                 season_videos[season_num].append(video_link)
 
         if not season_videos:
-            messagebox.showinfo("Info", "No videos found for the selected season.")
+            messagebox.showinfo(
+                "Info", "No videos found for the selected season.")
             return
 
         total_videos = sum(len(videos) for videos in season_videos.values())
@@ -927,13 +973,15 @@ class DownloadHandlers:
         for season_num in sorted(season_videos.keys()):
             videos = season_videos[season_num]
             season_folder_name = f"{series_name}_Season_{season_num:02d}"
-            season_download_path = os.path.join(base_download_path, season_folder_name)
+            season_download_path = os.path.join(
+                base_download_path, season_folder_name)
             os.makedirs(season_download_path, exist_ok=True)
 
             for video_link in videos:
                 current_video += 1
                 video_filename = os.path.basename(video_link)
-                video_save_path = os.path.join(season_download_path, video_filename)
+                video_save_path = os.path.join(
+                    season_download_path, video_filename)
 
                 if os.path.exists(video_save_path):
                     existing_size = os.path.getsize(video_save_path)
@@ -957,7 +1005,8 @@ class DownloadHandlers:
             progress_bar["value"] = 100
         if hasattr(status_label, 'set_text'):
             status_label.set_text("Download Completed")
-        messagebox.showinfo("Download Complete", f"Downloaded {total_videos} videos to:\n{base_download_path}")
+        messagebox.showinfo(
+            "Download Complete", f"Downloaded {total_videos} videos to:\n{base_download_path}")
 
     def handle_subtitle_download(self, url, progress_bar, status_label, window):
         """Handle subtitle download request."""
@@ -992,7 +1041,8 @@ class DownloadHandlers:
                 status_label.config(text=f"Downloading {subtitle_filename}")
             window.update_idletasks()
 
-            download_with_retry(subtitle_link, subtitle_save_path, progress_bar, status_label, window)
+            download_with_retry(subtitle_link, subtitle_save_path,
+                                progress_bar, status_label, window)
 
         if hasattr(progress_bar, 'set_progress'):
             progress_bar.set_progress(100)
@@ -1011,7 +1061,8 @@ class DownloadHandlers:
             messagebox.showinfo("Info", "Failed to fetch content from URL.")
             return
 
-        qnum = {"360p": "360", "720p": "720", "1080p": "1080"}.get(quality, "360")
+        qnum = {"360p": "360", "720p": "720",
+                "1080p": "1080"}.get(quality, "360")
         video_url_pattern = rf"https://\S+-{qnum}\.mp4"
         video_matches = re.findall(video_url_pattern, sample_text)
 
@@ -1041,7 +1092,8 @@ class DownloadHandlers:
                     filtered_videos.append(video_link)
 
         if not filtered_videos:
-            messagebox.showinfo("Info", "No videos found for the selected season.")
+            messagebox.showinfo(
+                "Info", "No videos found for the selected season.")
             return
 
         # Confirm before opening
@@ -1061,7 +1113,8 @@ class DownloadHandlers:
             except Exception as e:
                 print(f"Failed to open URL: {e}")
 
-        messagebox.showinfo("URLs Opened", f"Opened {num_videos} video URLs in your browser.")
+        messagebox.showinfo(
+            "URLs Opened", f"Opened {num_videos} video URLs in your browser.")
 
     def handle_apps_download(self, url, progress_bar, status_label, time_label, window):
         """Handle apps/games download request."""
@@ -1078,7 +1131,8 @@ class DownloadHandlers:
 
         download_thread = threading.Thread(
             target=download_apps_games_worker,
-            args=(url, download_path, progress_bar, status_label, time_label, window),
+            args=(url, download_path, progress_bar,
+                  status_label, time_label, window),
             daemon=True
         )
         download_thread.start()
@@ -1112,7 +1166,8 @@ class DownloadHandlers:
             except:
                 pass
 
-        messagebox.showinfo("URLs Opened", f"Opened {num_urls} file URLs in your browser.")
+        messagebox.showinfo(
+            "URLs Opened", f"Opened {num_urls} file URLs in your browser.")
 
 
 # ============================================================================
